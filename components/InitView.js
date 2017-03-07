@@ -5,9 +5,12 @@ import {
     Text,
     View,
     TextInput,
-    Button
+    Button,
+    Image,
+    KeyboardAvoidingView
 } from "react-native";
 import SharingView from "./SharingView";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export default class InitView extends Component {
     constructor(props) {
@@ -20,12 +23,14 @@ export default class InitView extends Component {
 
     // START SHARING
     startSharing() {
-        this.props.navigator.push({
-            title: "Sharing",
-            component: SharingView,
-            navigationBarHidden: false,
-            passProps: { name: this.state.name }
-        });
+        if (this.state.name.length > 0) {
+            this.props.navigator.push({
+                title: "Sharing",
+                component: SharingView,
+                navigationBarHidden: true,
+                passProps: { name: this.state.name }
+            });
+        }
     }
 
     // RENDER
@@ -33,26 +38,43 @@ export default class InitView extends Component {
         return (
             <View style={styles.container}>
 
+                <Image
+                    source={require("../resources/logo.png")}
+                    style={styles.backgroundImage}
+                />
+
                 <Text style={styles.welcome}>
                     Trevvio
                 </Text>
 
                 <Text style={styles.instructions}>
-                    What is your name?
+                    To start a session, tell us your name:
                 </Text>
 
-                <TextInput
-                    style={styles.nameInput}
-                    onChangeText={name => this.setState({ name })}
-                    value={this.state.name}
-                />
+                <KeyboardAvoidingView
+                    behavior={"padding"}
+                    style={{
+                        justifyContent: "center",
+                        alignItems: "center"
+                    }}
+                >
+                    <TextInput
+                        style={styles.nameInput}
+                        onChangeText={name => this.setState({ name })}
+                        value={this.state.name}
+                        placeholder={"Your name"}
+                    />
 
-                <Button
-                    onPress={this.startSharing.bind(this)}
-                    title="Start Sharing"
-                    color="#841584"
-                    accessibilityLabel="Start Sharing"
-                />
+                    <View style={styles.startButton}>
+                        <Icon.Button
+                            name="flash"
+                            backgroundColor="#2ecc71"
+                            onPress={this.startSharing.bind(this)}
+                        >
+                            Start Session
+                        </Icon.Button>
+                    </View>
+                </KeyboardAvoidingView>
 
             </View>
         );
@@ -64,12 +86,14 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#F5FCFF"
+        backgroundColor: "#f5f5f5"
     },
     welcome: {
-        fontSize: 20,
+        fontSize: 40,
         textAlign: "center",
-        margin: 10
+        marginTop: 20,
+        marginBottom: 40,
+        fontFamily: "Helvetica"
     },
     instructions: {
         textAlign: "center",
@@ -78,8 +102,22 @@ const styles = StyleSheet.create({
     },
     nameInput: {
         height: 40,
+        width: 300,
         borderColor: "gray",
-        borderWidth: 1
+        textAlign: "center",
+        backgroundColor: "white",
+        shadowColor: "black",
+        shadowOpacity: 0.16,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 2,
+        margin: 10
+    },
+    backgroundImage: {
+        height: 150,
+        width: 150
+    },
+    startButton: {
+        width: 130
     }
 });
 

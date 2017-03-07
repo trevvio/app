@@ -14,7 +14,7 @@ export default class Trevvio extends Component {
                 style={styles.container}
                 initialRoute={{
                     title: "Trevvio",
-                    navigationBarHidden: false,
+                    navigationBarHidden: true,
                     component: InitView
                 }}
             />
