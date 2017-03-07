@@ -5,9 +5,10 @@ import {
     Text,
     View,
     TextInput,
-    Button
+    Button,
+    Share
 } from "react-native";
-import shortid from "shortid";
+import easyid from "easyid";
 
 export default class SharingView extends Component {
     constructor(props) {
@@ -17,7 +18,11 @@ export default class SharingView extends Component {
 
         this.state = {
             name: this.props.name,
-            id: shortid.generate(),
+            id: easyid.generate({
+                groups: 1,
+                length: 4,
+                alphabet: "123456789ABCDEFGHJKMNPQRTUVWXYZabcdefghijklmnpqrstuvwxyz"
+            }),
             position: null
         };
     }
@@ -31,11 +36,16 @@ export default class SharingView extends Component {
         });
     }
 
+    shareLink() {
+        // open share dialog
+        Share.share({
+            message: "Follow my position now on: https://trevvio.com/" +
+                this.state.id
+        });
+    }
+
     // SHARE
     share() {
-        console.log(this.state.id);
-        console.log(this.state.position);
-
         fetch("https://trevvio.com", {
             method: "POST",
             headers: {
@@ -76,13 +86,23 @@ export default class SharingView extends Component {
                     Sending position...
                 </Text>
 
-                <TextInput style={styles.nameInput} value={this.state.id} />
+                <TextInput
+                    style={styles.nameInput}
+                    value={"https://trevvio.com/" + this.state.id}
+                />
 
                 <Button
                     onPress={this.stopSharing.bind(this)}
                     title="Stop Sharing"
                     color="#841584"
                     accessibilityLabel="Stop Sharing"
+                />
+
+                <Button
+                    onPress={this.shareLink.bind(this)}
+                    title="Share URL"
+                    color="#841584"
+                    accessibilityLabel="Share URL"
                 />
 
             </View>
@@ -104,7 +124,6 @@ const styles = StyleSheet.create({
     },
     nameInput: {
         height: 40,
-        width: 150,
         borderColor: "gray",
         borderWidth: 1
     }

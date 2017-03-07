@@ -78,7 +78,6 @@ const styles = StyleSheet.create({
     },
     nameInput: {
         height: 40,
-        width: 150,
         borderColor: "gray",
         borderWidth: 1
     }
