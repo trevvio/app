@@ -143,18 +143,26 @@ export default class SharingView extends Component {
 
                 {/* MAP VIEW */}
                 <MapView
-                    initialRegion={{
-                        latitude: 37.78825,
-                        longitude: -122.4324,
+                    region={{
+                        latitude: this.state.position !== null
+                            ? this.state.position.latitude
+                            : 37.78825,
+                        longitude: this.state.position !== null
+                            ? this.state.position.longitude
+                            : -122.4324,
                         latitudeDelta: 0.0922,
                         longitudeDelta: 0.0421
                     }}
                     style={styles.map}
                 >
                     {/* render position martker */}
-                    {this.state.position
+                    {this.state.position !== null
                         ? <MapView.Marker
-                              coordinate={this.state.position}
+                              coordinate={{
+                                  latitude: this.state.position.latitude,
+                                  longitude: this.state.position.longitude
+                              }}
+                              title="Me"
                               pinColor={"#e74c3c"}
                           />
                         : null}
