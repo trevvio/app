@@ -7,12 +7,14 @@ import {
     TextInput,
     Button,
     Image,
-    KeyboardAvoidingView
+    KeyboardAvoidingView,
+    AsyncStorage
 } from "react-native";
 import SharingView from "./SharingView";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 export default class InitView extends Component {
+    // CONSTRUCTOR
     constructor(props) {
         super(props);
 
@@ -21,9 +23,22 @@ export default class InitView extends Component {
         };
     }
 
+    // COMPONENT DID MOUNT
+    componentDidMount() {
+        AsyncStorage.getItem("name")
+            .then(name => {
+                this.setState({
+                    name
+                });
+            })
+            .done();
+    }
+
     // START SHARING
     startSharing() {
         if (this.state.name.length > 0) {
+            AsyncStorage.setItem("name", this.state.name);
+
             this.props.navigator.push({
                 title: "Sharing",
                 component: SharingView,

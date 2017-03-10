@@ -14,10 +14,27 @@ import {
 import easyid from "easyid";
 import MapView from "react-native-maps";
 import Icon from "react-native-vector-icons/FontAwesome";
+import io from "socket.io-client";
 
 const { width, height } = Dimensions.get("window");
+const HOST = "https://trevvio.com";
+//const HOST = "http://localhost:3000";
+
+// workaround for React Native issues with some libraries (e.g. cuid, socket-io)
+if (global.navigator && global.navigator.product === "ReactNative") {
+    global.navigator.mimeTypes = "";
+    try {
+        global.navigator.userAgent = "ReactNative";
+    } catch (e) {
+        console.log(
+            "Tried to fake useragent, but failed. This is normal on some devices, you may ignore this error: " +
+                e.message
+        );
+    }
+}
 
 export default class SharingView extends Component {
+    // CONSTRUCTOR
     constructor(props) {
         super(props);
 
@@ -28,7 +45,7 @@ export default class SharingView extends Component {
             id: easyid.generate({
                 groups: 1,
                 length: 4,
-                alphabet: "123456789ABCDEFGHJKMNPQRTUVWXYZabcdefghijklmnpqrstuvwxyz"
+                alphabet: "123456789ABCDEFGHJKMNPQRTUVWXYZabcdefghijkmnpqrstuvwxyz"
             }),
             position: null,
             sent: 0,
@@ -53,6 +70,24 @@ export default class SharingView extends Component {
                 enableHighAccuracy: true
             }
         );
+
+        // open socket.io connection
+        const socket = io(HOST, {
+            transports: ["websocket"]
+        });
+
+        // ON: connect to server, join channel
+        socket.on("connect", () => {
+            socket.emit("join", this.state.id);
+        });
+
+        // ON: new viewers update
+        socket.on("viewers", viewers => {
+            console.log("viewers", viewers);
+            this.setState({
+                viewers: viewers - 1
+            });
+        });
     }
 
     // COMPONENT WILL UNMOUNT
@@ -70,7 +105,7 @@ export default class SharingView extends Component {
 
     // SEND POSITION
     sendPosition() {
-        fetch("https://trevvio.com", {
+        fetch(HOST, {
             method: "POST",
             headers: {
                 Accept: "application/json",
@@ -86,7 +121,7 @@ export default class SharingView extends Component {
             .then(response => response.json())
             .then(responseJson => {
                 this.setState({
-                    viewers: responseJson.viewers
+                    viewers: responseJson.viewers - 1
                 });
             })
             .catch(error => {
@@ -96,7 +131,7 @@ export default class SharingView extends Component {
 
     // STOP SHARING
     stopSharing() {
-        fetch("https://trevvio.com", {
+        fetch(HOST, {
             method: "DELETE",
             headers: {
                 Accept: "application/json",
@@ -174,6 +209,7 @@ export default class SharingView extends Component {
                 </Text>
 
                 <TextInput
+                    editable={false}
                     style={styles.nameInput}
                     value={"https://trevvio.com/" + this.state.id}
                 />
