@@ -40,6 +40,7 @@ export default class SharingView extends Component {
         super(props);
 
         this.watchId = null;
+        this.socket = null;
 
         this.state = {
             name: this.props.name,
@@ -73,18 +74,17 @@ export default class SharingView extends Component {
         );
 
         // open socket.io connection
-        const socket = io(HOST, {
+        this.socket = io(HOST, {
             transports: ["websocket"]
         });
 
         // ON: connect to server, join channel
-        socket.on("connect", () => {
-            socket.emit("join", this.state.id);
+        this.socket.on("connect", () => {
+            this.socket.emit("join", this.state.id);
         });
 
         // ON: new viewers update
-        socket.on("viewers", viewers => {
-            console.log("viewers", viewers);
+        this.socket.on("viewers", viewers => {
             this.setState({
                 viewers: viewers - 1
             });
@@ -94,6 +94,18 @@ export default class SharingView extends Component {
     // COMPONENT WILL UNMOUNT
     componentWillUnmount() {
         navigator.geolocation.clearWatch(this.watchId);
+        this.socket.disconnect();
+
+        fetch(HOST, {
+            method: "DELETE",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                id: this.state.id
+            })
+        });
     }
 
     shareLink() {
@@ -214,7 +226,7 @@ export default class SharingView extends Component {
                 <TextInput
                     editable={false}
                     style={styles.nameInput}
-                    value={"https://trevvio.com/" + this.state.id}
+                    value={HOST + "/" + this.state.id}
                 />
 
                 <View style={styles.numberRow}>
@@ -263,7 +275,8 @@ const styles = StyleSheet.create({
         borderColor: "gray",
         textAlign: "center",
         backgroundColor: "white",
-        margin: 10
+        marginTop: 10,
+        marginBottom: 10
     },
     numberHero: {
         fontSize: 60
