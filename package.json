@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "easyid": "^1.0.0",
+    "format-si-prefix": "^0.3.2",
     "react": "15.4.2",
     "react-native": "0.42.0",
     "react-native-dash": "0.0.3",

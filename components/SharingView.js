@@ -15,6 +15,7 @@ import easyid from "easyid";
 import MapView from "react-native-maps";
 import Icon from "react-native-vector-icons/FontAwesome";
 import io from "socket.io-client";
+import { formatSI } from "format-si-prefix";
 
 const { width, height } = Dimensions.get("window");
 const HOST = "https://trevvio.com";
@@ -152,7 +153,9 @@ export default class SharingView extends Component {
 
                 <View style={styles.numberRow}>
                     <View style={styles.numberRowItem}>
-                        <Text style={styles.numberHero}>{this.state.sent}</Text>
+                        <Text style={styles.numberHero}>
+                            {formatSI(this.state.sent)}
+                        </Text>
                         <Text style={styles.instructions}>
                             positions sent
                         </Text>
@@ -168,7 +171,7 @@ export default class SharingView extends Component {
                     />
                     <View style={styles.numberRowItem}>
                         <Text style={styles.numberHero}>
-                            {this.state.viewers}
+                            {formatSI(this.state.viewers)}
                         </Text>
                         <Text style={styles.instructions}>
                             people watching
