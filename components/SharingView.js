@@ -220,7 +220,7 @@ export default class SharingView extends Component {
                 </MapView>
 
                 <Text style={{ marginTop: 10, color: "grey" }}>
-                    Your position is not visible on:
+                    Your position is now visible on:
                 </Text>
 
                 <TextInput
